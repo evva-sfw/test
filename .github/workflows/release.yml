@@ -189,6 +189,8 @@ jobs:
         run: yarn git-cliff --current --output ${{ runner.temp }}/RELEASE_NOTES.md
 
       - name: Create a release on Github with release notes and provenance
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           gh release edit "$TAG_NAME" --notes-file "${{ runner.temp }}/RELEASE_NOTES.md" --draft=false --latest
 
