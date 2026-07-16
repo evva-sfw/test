@@ -60,7 +60,7 @@ jobs:
         env:
           VERSION_TYPE: ${{ github.event.inputs.input_version }}
         run: |
-            git-cliff --bump ${{ github.event.inputs.input_version }} --bumped-version > version
+            yarn dlx git-cliff --bump ${{ github.event.inputs.input_version }} --bumped-version > version
             echo "New version will be $(cat version)"
             NEW_TAG=$(cat version)
             echo "new-tag=$NEW_TAG" >> "$GITHUB_OUTPUT"
