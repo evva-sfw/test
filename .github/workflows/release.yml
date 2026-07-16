@@ -60,7 +60,7 @@ jobs:
         env:
           VERSION_TYPE: ${{ github.event.inputs.input_version }}
         run: |
-            export RUST_LOG=none
+            export RUST_LOG=""
             yarn dlx git-cliff --bump ${{ github.event.inputs.input_version }} --bumped-version > version
             echo "New version will be $(cat version)"
             NEW_TAG=$(cat version)
