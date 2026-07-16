@@ -1,0 +1,160 @@
+{
+  "name": "@evva/abrevva-react-native",
+  "version": "6.0.11",
+  "author": "EVVA Sicherheitstechnologie GmbH",
+  "description": "The EVVA React-Native Module is a collection of tools to work with electronical EVVA access components. It allows for scanning and connecting via BLE.",
+  "main": "./lib/module/index.js",
+  "types": "./lib/typescript/src/index.d.ts",
+  "exports": {
+    ".": {
+      "source": "./src/index.tsx",
+      "types": "./lib/typescript/src/index.d.ts",
+      "default": "./lib/module/index.js"
+    }
+  },
+  "files": [
+    "src",
+    "lib",
+    "android",
+    "ios",
+    "cpp",
+    "nitrogen",
+    "nitro.json",
+    "*.podspec",
+    "react-native.config.js",
+    "!ios/build",
+    "!android/build",
+    "!android/gradle",
+    "!android/gradlew",
+    "!android/gradlew.bat",
+    "!android/local.properties",
+    "!**/__tests__",
+    "!**/__fixtures__",
+    "!**/__mocks__",
+    "!**/.*"
+  ],
+  "scripts": {
+    "example": "yarn workspace @evva/abrevva-react-native-example",
+    "clean": "del-cli android/build example/android/build example/android/app/build example/ios/build lib",
+    "prepare": "bob build",
+    "nitrogen": "npx nitrogen --log-level=debug",
+    "typecheck": "tsc",
+    "test": "jest",
+    "lint": "eslint \"**/*.{js,ts,tsx}\"",
+    "release": "release-it"
+  },
+  "keywords": [
+    "react-native",
+    "ios",
+    "android"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/evva-sfw/abrevva-react-native.git"
+  },
+  "license": "EVVA Software License",
+  "bugs": {
+    "url": "https://github.com/evva-sfw/abrevva-react-native/issues"
+  },
+  "homepage": "https://github.com/evva-sfw/abrevva-react-native",
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/",
+    "access": "public"
+  },
+  "devDependencies": {
+    "@eslint/compat": "^1.1.1",
+    "@eslint/eslintrc": "^2.1.4",
+    "@eslint/js": "^9.13.0",
+    "@evilmartians/lefthook": "^2.1.4",
+    "@react-native/babel-preset": "^0.84.1",
+    "@release-it/conventional-changelog": "^11.0.1",
+    "@types/jest": "^30.0.0",
+    "@types/react": "^19.2.14",
+    "auto-changelog": "^2.5.0",
+    "commitlint": "^21.2.1",
+    "del-cli": "^7.0.0",
+    "eslint": "^9.15.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.5.5",
+    "git-cliff": "^2.13.1",
+    "jest": "^30.3.0",
+    "jest-environment-node": "^30.4.1",
+    "nitrogen": "^0.35.2",
+    "prettier": "^3.8.1",
+    "react": "^19.2.4",
+    "react-native": "^0.84.1",
+    "react-native-builder-bob": "^0.40.18",
+    "react-native-nitro-modules": "^0.35.2",
+    "release-it": "^20.0.0",
+    "turbo": "^2.8.20",
+    "typescript": "^6.0.2"
+  },
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*",
+    "react-native-nitro-modules": "*"
+  },
+  "workspaces": [
+    "example"
+  ],
+  "packageManager": "yarn@4.11.0",
+  "react-native-builder-bob": {
+    "source": "src",
+    "output": "lib",
+    "targets": [
+      [
+        "custom",
+        {
+          "script": "nitrogen",
+          "clean": "nitrogen/"
+        }
+      ],
+      [
+        "module",
+        {
+          "esm": true
+        }
+      ],
+      [
+        "typescript",
+        {
+          "project": "tsconfig.build.json"
+        }
+      ]
+    ]
+  },
+  "jest": {
+    "preset": "react-native",
+    "modulePathIgnorePatterns": [
+      "<rootDir>/example/node_modules",
+      "<rootDir>/lib/"
+    ],
+    "moduleNameMapper": {
+      "^@evva/abrevva-react-native$": "<rootDir>/src/index.tsx"
+    },
+    "testEnvironment": "node",
+    "setupFilesAfterEnv": [
+      "<rootDir>/jest.setup.ts"
+    ]
+  },
+  "prettier": {
+    "quoteProps": "consistent",
+    "singleQuote": true,
+    "tabWidth": 2,
+    "trailingComma": "es5",
+    "useTabs": false
+  },
+  "create-react-native-library": {
+    "type": "nitro-module",
+    "languages": "kotlin-swift",
+    "tools": [
+      "jest",
+      "eslint"
+    ],
+    "version": "0.57.2"
+  },
+  "dependencies": {
+    "@commitlint/config-conventional": "^20.5.0",
+    "@react-native/eslint-config": "^0.84.1"
+  }
+}

@@ -1,0 +1,259 @@
+name: Release and publish changelog
+on:
+  workflow_dispatch:
+    inputs:
+      input_version:
+        type: choice
+        description: What type of release?
+        options:
+          - ""
+          - patch
+          - minor
+          - major
+concurrency: ${{ github.workflow }}-${{ github.ref }}
+
+# Dont need permissions because we use github app and not the workflow permissions
+permissions: {}
+jobs:
+  bump-version:
+    if:  github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    outputs:
+      new-tag: ${{ steps.version.outputs.new-tag }}
+    steps:
+
+      # Create Github App Token
+      - uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        id: app-token
+        with:
+          # required
+          client-id: ${{ vars.GLOBAL_APP_EVVA_BEE_APP_ID }}
+          private-key: ${{ secrets.GLOBAL_APP_EVVA_BEE_PRIVATE_KEY }}
+
+      # Get GitHub App User ID
+      - name: Get GitHub App User ID
+        id: get-user-id
+        run: echo "user-id=$(gh api "/users/${{ steps.app-token.outputs.app-slug }}[bot]" --jq .id)" >> "$GITHUB_OUTPUT"
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          GH_HOST: github.com
+      - run: |
+          git config --global user.name '${{ steps.app-token.outputs.app-slug }}[bot]'
+          git config --global user.email '${{ steps.get-user-id.outputs.user-id }}+${{ steps.app-token.outputs.app-slug }}[bot]@users.noreply.github.com'
+
+
+      - name: Checkout repository
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          fetch-depth: 0 # For release-it and auto-changelog to be able to generate the full changelog
+          fetch-tags: true
+          token: ${{ steps.app-token.outputs.token }}
+          ref: main
+
+      # Install yarn dependencies (releaseit + autochangelog)
+      - name: Install dependencies
+        run: corepack enable && yarn install --immutable
+
+      # Get the latest tag info, increment it accordingly, update the package.json file so it is built with new version
+      - name: Update version info for build
+        id: version
+        env:
+          VERSION_TYPE: ${{ github.event.inputs.input_version }}
+        # Files to be modified are copied to temp location so repo is returned to original state after build is complete
+        run: |
+            npx release-it ${{ github.event.inputs.input_version }} --no-git.commit --no-git.tag --no-git.push --no-github.release --ci --no-npm
+            echo "New version will be $(cat version)"
+            NEW_TAG=$(cat version)
+            echo "new-tag=$NEW_TAG" >> "$GITHUB_OUTPUT"
+
+      - name: Update version in package.json and commit changes
+        id: update-version
+        env:
+            NEW_TAG: ${{ steps.version.outputs.new-tag }}
+            # Files to be modified are copied to temp location so repo is returned to original state after build is complete
+        run: |
+            echo '::group:: Preparing files with updated versions'
+            echo "New version will be $NEW_TAG"
+            mkdir -p /tmp/abrevva-react-native
+            cp ${{ github.workspace }}/package.json /tmp/abrevva-react-native/package.json
+            jq --arg version "$NEW_TAG" '.version = $version' ${{ github.workspace }}/package.json > temp.json && mv temp.json ${{ github.workspace }}/package.json
+            echo '::endgroup::'
+            echo '::group:: Reading package.json'
+            cat ${{ github.workspace }}/package.json
+            echo '::endgroup::'
+
+      - name: Commit & Push changes
+        uses: iarekylew00t/verified-bot-commit@126a6a11889ab05bcff72ec2403c326cd249b84c # v2.3.0
+        with:
+          ref: main
+          token:  ${{ steps.app-token.outputs.token }}
+          message: "chore: updated version in package files"
+          files: |
+            package.json
+
+
+  publish:
+    needs: bump-version
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+      attestations: write
+    steps:
+
+      - name: Harden Runner
+        uses: step-security/harden-runner@cb605e52c26070c328afc4562f0b4ada7618a84e # v2.10.4
+        with:
+          egress-policy: audit
+
+      # Create Github App Token
+      - uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        id: app-token
+        with:
+          # required
+          # Appid from this app: https://evva.ghe.com/apps/p-lehner/evva-bee
+          client-id: ${{ vars.GLOBAL_APP_EVVA_BEE_APP_ID }}
+          private-key: ${{ secrets.GLOBAL_APP_EVVA_BEE_PRIVATE_KEY }}
+
+      # Get GitHub App User ID
+      - name: Get GitHub App User ID
+        id: get-user-id
+        run: echo "user-id=$(gh api "/users/${{ steps.app-token.outputs.app-slug }}[bot]" --jq .id)" >> "$GITHUB_OUTPUT"
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          GH_HOST: github.com
+      - run: |
+          git config --global user.name '${{ steps.app-token.outputs.app-slug }}[bot]'
+          git config --global user.email '${{ steps.get-user-id.outputs.user-id }}+${{ steps.app-token.outputs.app-slug }}[bot]@users.noreply.github.com'
+
+      - name: Checkout repository
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          fetch-depth: 0 # For release-it and auto-changelog to be able to generate the full changelog
+          fetch-tags: true
+          token: ${{ steps.app-token.outputs.token }}
+          ref: main
+          persist-credentials: true # This is needed for release it to use it later
+
+      - name: Debug inputs
+        run: |
+          echo "Type of release:${{ github.event.inputs.input_version }} from user ${GITHUB_ACTOR}"
+          git config --list
+
+      - name: Setup Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: lts/*
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Cache node_modules
+        id: node-modules
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: |
+            node_modules
+            example/node_modules
+            .yarn/cache
+          key: node-modules
+
+      - name: Install dependencies
+        run: corepack enable && yarn install --immutable
+
+      - name: Package files to .tgz
+        run: |
+          rm -f *.tgz
+          yarn pack --out '%s_%v.tgz'
+
+      - name: Publish to npm
+        run: yarn npm publish --provenance
+
+      - name: Create Signed Tag via GH CLI and fetch tags
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          TAG_NAME: ${{ needs.bump-version.outputs.new-tag }}
+        run: |
+          gh api repos/evva-sfw/abrevva-react-native/releases \
+            -f tag_name="$TAG_NAME" \
+            -f target_commitish="${{ github.sha }}" \
+            -f name="Release $TAG_NAME" \
+            -f body="Release $TAG_NAME" \
+            -F draft=false \
+            -F prerelease=false
+          git fetch --tags
+
+      - name: Generate release notes and put in Github temporary location
+        run: yarn git-cliff --current --output ${{ runner.temp }}/RELEASE_NOTES.md
+
+      - name: Delete release but keep tag
+        run: gh release delete ${{ needs.bump-version.outputs.new-tag}} --yes
+
+      - name: Create a release on Github with release notes and provenance
+        run: |
+          gh release create ${{ needs.bump-version.outputs.new-tag}} \
+          *.tgz \
+          -F ${{ runner.temp }}/RELEASE_NOTES.md \
+          -t "Release ${{ needs.bump-version.outputs.new-tag}}"
+
+      - name: Attest
+        uses: actions/attest-build-provenance@0f67c3f4856b2e3261c31976d6725780e5e4c373 # v4.1.1
+        with:
+          subject-path: "${{ github.workspace }}/*.tgz"
+
+
+  update-changelog:
+    needs: publish
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      # Create Github App Token
+      - uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        id: app-token
+        with:
+          # required
+          client-id: ${{ vars.GLOBAL_APP_EVVA_BEE_APP_ID }}
+          # Private key from vault https://vault.service.consul:8200/ui/vault/secrets/secret/show/infrastructure/services/external/github-enterprise/github-apps/evva-bee
+          private-key: ${{ secrets.GLOBAL_APP_EVVA_BEE_PRIVATE_KEY }}
+
+      # Get GitHub App User ID
+      - name: Get GitHub App User ID
+        id: get-user-id
+        run: echo "user-id=$(gh api "/users/${{ steps.app-token.outputs.app-slug }}[bot]" --jq .id)" >> "$GITHUB_OUTPUT"
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          GH_HOST: github.com
+      - run: |
+          git config --global user.name '${{ steps.app-token.outputs.app-slug }}[bot]'
+          git config --global user.email '${{ steps.get-user-id.outputs.user-id }}+${{ steps.app-token.outputs.app-slug }}[bot]@users.noreply.github.com'
+
+      - name: Checkout repository
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          fetch-depth: 0 # For release-it and auto-changelog to be able to generate the full changelog
+          fetch-tags: true
+          token: ${{ steps.app-token.outputs.token }}
+          ref: main
+
+      - name: Setup Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: lts/*
+
+        # Install yarn dependencies (releaseit + autochangelog)
+      - name: Install dependencies
+        run: corepack enable && yarn install --immutable
+
+      - name: Generate changelog
+        run: |
+          yarn auto-changelog -c .auto-changelog
+          cat CHANGELOG.md
+
+      - name: Commit & Push changes
+        uses: iarekylew00t/verified-bot-commit@126a6a11889ab05bcff72ec2403c326cd249b84c # v2.3.0
+        with:
+          ref: main
+          token:  ${{ steps.app-token.outputs.token }}
+          message: "docs: Updated changelog"
+          files: |
+            CHANGELOG.md
