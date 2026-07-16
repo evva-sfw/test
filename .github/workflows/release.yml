@@ -170,7 +170,7 @@ jobs:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
           TAG_NAME: ${{ needs.bump-version.outputs.new-tag }}
         run: |
-          gh release create "$TAG_NAME" --target ${{ github.sha }} --notes "Generating..." --title "$TAG_NAME" *.tgz --draft
+          gh release create "$TAG_NAME" --target ${{ github.sha }} --notes "Generating..." --title "$TAG_NAME" *.tgz
           git fetch --tags
 
       - name: Generate release notes and put in Github temporary location
