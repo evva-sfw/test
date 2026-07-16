@@ -165,7 +165,7 @@ jobs:
       - name: Publish to npm
         run: yarn npm publish --provenance
 
-      - name: Create Signed Tag via GH CLI and fetch tags 
+      - name: Create Signed Tag via GH CLI and fetch tags
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
           TAG_NAME: ${{ needs.bump-version.outputs.new-tag }}
