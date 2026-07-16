@@ -44,12 +44,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
-          fetch-depth: 0 # For release-it and auto-changelog to be able to generate the full changelog
+          fetch-depth: 0 # For git-cliff to generate full logs
           fetch-tags: true
           token: ${{ steps.app-token.outputs.token }}
           ref: main
 
-      # Install yarn dependencies (releaseit + autochangelog)
+      # Install yarn dependencies (git-cliff)
       - name: Install dependencies
         run: corepack enable && yarn install --immutable
 
@@ -125,7 +125,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
-          fetch-depth: 0 # For release-it and auto-changelog to be able to generate the full changelog
+          fetch-depth: 0 # For git cliff to be able to generate the full changelog
           fetch-tags: true
           token: ${{ steps.app-token.outputs.token }}
           ref: main
@@ -217,7 +217,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
-          fetch-depth: 0 # For release-it and auto-changelog to be able to generate the full changelog
+          fetch-depth: 0 # For git-cliff to be able to generate the full changelog
           fetch-tags: true
           token: ${{ steps.app-token.outputs.token }}
           ref: main
@@ -231,9 +231,9 @@ jobs:
       - name: Install dependencies
         run: corepack enable && yarn install --immutable
 
-      - name: Generate changelog
+      - name: Generate changelog using git cliff and cliff-changelog config
         run: |
-          yarn auto-changelog -c .auto-changelog
+          yarn dlx git-cliff -c cliff-changelog.toml -o CHANGELOG.md
           cat CHANGELOG.md
 
       - name: Commit & Push changes
