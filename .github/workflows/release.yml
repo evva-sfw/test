@@ -69,7 +69,6 @@ jobs:
         id: update-version
         env:
             NEW_TAG: ${{ steps.version.outputs.new-tag }}
-            # Files to be modified are copied to temp location so repo is returned to original state after build is complete
         run: |
             echo '::group:: Preparing files with updated versions'
             echo "New version will be $NEW_TAG"
