@@ -165,20 +165,32 @@ jobs:
       - name: Publish to npm
         run: yarn npm publish --provenance
 
+      - name: DEBUG
+        run: |
+          echo "Before fetch"
+          echo "github.sha is $GITHUB_SHA - ${{ github.sha }}"
+          echo "git rev-parse HEAD is $(git rev-parse HEAD) - ${github.ref}}"
+          git fetch --all
+          echo "After fetch"
+          echo "github.sha is $GITHUB_SHA - ${{ github.sha }}"
+          echo "git rev-parse HEAD is $(git rev-parse HEAD) - ${github.ref}}"
+
       - name: Create Signed Tag via GH CLI and fetch tags
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
           TAG_NAME: ${{ needs.bump-version.outputs.new-tag }}
         run: |
-          gh release create "$TAG_NAME" --target ${{ github.sha }} --notes "Generating..." --title "$TAG_NAME" *.tgz
+          gh release create "$TAG_NAME" --target $(git rev-parse HEAD) --notes "Generating..." --title "$TAG_NAME" *.tgz
           git fetch --tags
 
       - name: Generate release notes and put in Github temporary location
+        env:
+          TAG_NAME: ${{ needs.bump-version.outputs.new-tag }}
         run: yarn git-cliff --current --output ${{ runner.temp }}/RELEASE_NOTES.md
 
       - name: Create a release on Github with release notes and provenance
         run: |
-          gh release edit "$TAG_NAME" --notes-file ${{ runner.temp }}/RELEASE_NOTES.md" --draft=false --latest
+          gh release edit "$TAG_NAME" --notes-file "${{ runner.temp }}/RELEASE_NOTES.md" --draft=false --latest
 
       - name: Attest
         uses: actions/attest-build-provenance@0f67c3f4856b2e3261c31976d6725780e5e4c373 # v4.1.1
