@@ -191,6 +191,7 @@ jobs:
       - name: Create a release on Github with release notes and provenance
         env:
           GH_TOKEN: ${{ github.token }}
+          TAG_NAME: ${{ needs.bump-version.outputs.new-tag }}
         run: |
           gh release edit "$TAG_NAME" --notes-file "${{ runner.temp }}/RELEASE_NOTES.md" --draft=false --latest
 
