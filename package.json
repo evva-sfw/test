@@ -1,6 +1,6 @@
 {
   "name": "@evva/test-package",
-  "version": "7.0.1",
+  "version": "7.1.0",
   "author": "EVVA Sicherheitstechnologie GmbH",
   "main": "./lib/module/index.js",
   "types": "./lib/typescript/src/index.d.ts",
