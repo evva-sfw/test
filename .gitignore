@@ -2,3 +2,6 @@ node_modules/
 *.tgz
 .yarn/
 lefthook.yml
+version
+.env
+.pnp.*

@@ -59,10 +59,8 @@ jobs:
         id: version
         env:
           VERSION_TYPE: ${{ github.event.inputs.input_version }}
-        # Files to be modified are copied to temp location so repo is returned to original state after build is complete
         run: |
-            ls -la
-            yarn release-it ${{ github.event.inputs.input_version }} --no-git.commit --no-git.tag --no-git.push --no-github.release --ci --no-npm
+            git-cliff --bump ${{ github.event.inputs.input_version }} --bumped-version > version
             echo "New version will be $(cat version)"
             NEW_TAG=$(cat version)
             echo "new-tag=$NEW_TAG" >> "$GITHUB_OUTPUT"

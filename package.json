@@ -1,5 +1,5 @@
 {
-  "name": "@evva/abrevva-react-native",
+  "name": "@evva/test-package",
   "version": "6.0.11",
   "author": "EVVA Sicherheitstechnologie GmbH",
   "description": "The EVVA React-Native Module is a collection of tools to work with electronical EVVA access components. It allows for scanning and connecting via BLE.",
@@ -40,8 +40,7 @@
     "nitrogen": "npx nitrogen --log-level=debug",
     "typecheck": "tsc",
     "test": "jest",
-    "lint": "eslint \"**/*.{js,ts,tsx}\"",
-    "release": "release-it"
+    "lint": "eslint \"**/*.{js,ts,tsx}\""
   },
   "keywords": [
     "react-native",
@@ -67,7 +66,6 @@
     "@eslint/js": "^9.13.0",
     "@evilmartians/lefthook": "^2.1.4",
     "@react-native/babel-preset": "^0.84.1",
-    "@release-it/conventional-changelog": "^11.0.1",
     "@types/jest": "^30.0.0",
     "@types/react": "^19.2.14",
     "auto-changelog": "^2.5.0",
@@ -85,7 +83,6 @@
     "react-native": "^0.84.1",
     "react-native-builder-bob": "^0.40.18",
     "react-native-nitro-modules": "^0.35.2",
-    "release-it": "^20.2.1",
     "turbo": "^2.8.20",
     "typescript": "^6.0.2"
   },
