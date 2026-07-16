@@ -34,7 +34,7 @@
     "!**/.*"
   ],
   "scripts": {
-    "example": "yarn workspace @evva/abrevva-react-native-example",
+    "example": "yarn workspace @evva/test-example",
     "clean": "del-cli android/build example/android/build example/android/app/build example/ios/build lib",
     "prepare": "bob build",
     "nitrogen": "npx nitrogen --log-level=debug",
@@ -49,13 +49,13 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/evva-sfw/abrevva-react-native.git"
+    "url": "git+https://github.com/evva-sfw/test"
   },
   "license": "EVVA Software License",
   "bugs": {
-    "url": "https://github.com/evva-sfw/abrevva-react-native/issues"
+    "url": "https://github.com/evva-sfw/test/issues"
   },
-  "homepage": "https://github.com/evva-sfw/abrevva-react-native",
+  "homepage": "https://github.com/evva-sfw/test-react-native",
   "publishConfig": {
     "registry": "https://registry.npmjs.org/",
     "access": "public"
@@ -127,7 +127,7 @@
       "<rootDir>/lib/"
     ],
     "moduleNameMapper": {
-      "^@evva/abrevva-react-native$": "<rootDir>/src/index.tsx"
+      "^@evva/test$": "<rootDir>/src/index.tsx"
     },
     "testEnvironment": "node",
     "setupFilesAfterEnv": [
