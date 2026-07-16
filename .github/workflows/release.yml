@@ -169,11 +169,11 @@ jobs:
         run: |
           echo "Before fetch"
           echo "github.sha is $GITHUB_SHA - ${{ github.sha }}"
-          echo "git rev-parse HEAD is $(git rev-parse HEAD) - ${github.ref}}"
+          echo "git rev-parse HEAD is $(git rev-parse HEAD)"
           git fetch --all
           echo "After fetch"
           echo "github.sha is $GITHUB_SHA - ${{ github.sha }}"
-          echo "git rev-parse HEAD is $(git rev-parse HEAD) - ${github.ref}}"
+          echo "git rev-parse HEAD is $(git rev-parse HEAD)"
 
       - name: Create Signed Tag via GH CLI and fetch tags
         env:
