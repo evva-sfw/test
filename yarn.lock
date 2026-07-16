@@ -1972,7 +1972,7 @@ __metadata:
     react-native: "npm:^0.84.1"
     react-native-builder-bob: "npm:^0.40.18"
     react-native-nitro-modules: "npm:^0.35.2"
-    release-it: "npm:^20.0.0"
+    release-it: "npm:^20.2.1"
     turbo: "npm:^2.8.20"
     typescript: "npm:^6.0.2"
   peerDependencies:
@@ -10084,7 +10084,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"release-it@npm:^20.0.0":
+"release-it@npm:^20.2.1":
   version: 20.2.1
   resolution: "release-it@npm:20.2.1"
   dependencies:
