@@ -190,7 +190,6 @@ jobs:
         with:
           subject-path: "${{ github.workspace }}/*.tgz"
 
-
   update-changelog:
     needs: publish
     runs-on: ubuntu-latest
