@@ -1,6 +1,6 @@
-# git-cliff ~ configuration file
+# git-cliff ~ configuration file for release note generation!!
 # https://git-cliff.org/docs/configuration
-
+# REPLACE <REPO> WITH YOUR REPO!!!!
 
 [changelog]
 # A Tera template to be rendered for each release in the changelog.
