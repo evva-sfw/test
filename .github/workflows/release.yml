@@ -171,27 +171,15 @@ jobs:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
           TAG_NAME: ${{ needs.bump-version.outputs.new-tag }}
         run: |
-          gh api repos/evva-sfw/abrevva-react-native/releases \
-            -f tag_name="$TAG_NAME" \
-            -f target_commitish="${{ github.sha }}" \
-            -f name="Release $TAG_NAME" \
-            -f body="Release $TAG_NAME" \
-            -F draft=false \
-            -F prerelease=false
+          gh release create "$TAG_NAME" --target ${{ github.sha }} --notes "Generating..." --title "$TAG_NAME" *.tgz --draft
           git fetch --tags
 
       - name: Generate release notes and put in Github temporary location
         run: yarn git-cliff --current --output ${{ runner.temp }}/RELEASE_NOTES.md
 
-      - name: Delete release but keep tag
-        run: gh release delete ${{ needs.bump-version.outputs.new-tag}} --yes
-
       - name: Create a release on Github with release notes and provenance
         run: |
-          gh release create ${{ needs.bump-version.outputs.new-tag}} \
-          *.tgz \
-          -F ${{ runner.temp }}/RELEASE_NOTES.md \
-          -t "Release ${{ needs.bump-version.outputs.new-tag}}"
+          gh release edit "$TAG_NAME" --notes-file ${{ runner.temp }}/RELEASE_NOTES.md" --draft=false --latest
 
       - name: Attest
         uses: actions/attest-build-provenance@0f67c3f4856b2e3261c31976d6725780e5e4c373 # v4.1.1

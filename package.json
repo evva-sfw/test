@@ -2,7 +2,6 @@
   "name": "@evva/test-package",
   "version": "6.0.12",
   "author": "EVVA Sicherheitstechnologie GmbH",
-  "description": "The EVVA React-Native Module is a collection of tools to work with electronical EVVA access components. It allows for scanning and connecting via BLE.",
   "main": "./lib/module/index.js",
   "types": "./lib/typescript/src/index.d.ts",
   "exports": {
@@ -42,11 +41,6 @@
     "test": "jest",
     "lint": "eslint \"**/*.{js,ts,tsx}\""
   },
-  "keywords": [
-    "react-native",
-    "ios",
-    "android"
-  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/evva-sfw/test"
@@ -55,7 +49,7 @@
   "bugs": {
     "url": "https://github.com/evva-sfw/test/issues"
   },
-  "homepage": "https://github.com/evva-sfw/test-react-native",
+  "homepage": "https://github.com/evva-sfw/test",
   "publishConfig": {
     "registry": "https://registry.npmjs.org/",
     "access": "public"
