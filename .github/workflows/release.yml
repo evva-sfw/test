@@ -65,11 +65,11 @@ jobs:
         env:
           USER_INPUT_VERSION: "${{ github.event.inputs.input_version }}"
         run: |
-          if [[ ! -z "$USER_INPUT_VERSION"]]; then;
+          if [[ ! -z "$USER_INPUT_VERSION"]]; then
             echo "Type of release:"$USER_INPUT_VERSION" from user ${GITHUB_ACTOR}"
           else
-            echo "User did not select release type. Will be automatically determined..."
-
+            echo "User did not select release type. It will be automatically determined..."
+          fi
       # Get the latest tag info, increment it accordingly, update the package.json file so it is built with new version
       - name: Update version info for build
         id: version
