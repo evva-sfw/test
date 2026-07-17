@@ -65,7 +65,7 @@ jobs:
         env:
           USER_INPUT_VERSION: "${{ github.event.inputs.input_version }}"
         run: |
-          if [[ ! -z "$USER_INPUT_VERSION"]]; then
+          if [[ ! -z "$USER_INPUT_VERSION" ]] ; then
             echo "Type of release:"$USER_INPUT_VERSION" from user ${GITHUB_ACTOR}"
           else
             echo "User did not select release type. It will be automatically determined..."
