@@ -1,3 +1,8 @@
+## [9.0.0](https://github.com/evva-sfw/test/compare/8.0.0...9.0.0) - 2026-07-17
+
+### 🧹 Chore
+
+- Updated cliff.toml ([#7](https://github.com/evva-sfw/test/pull/7))
 ## [7.1.0](https://github.com/evva-sfw/test/compare/7.0.1...7.1.0) - 2026-07-16
 
 ### 🎉 Features
